@@ -1637,10 +1637,35 @@ def Batch_Process(video_dict,tracking_params,bin_dict,accept_p_frames=False):
     return summary_all, layout
 
 
+########################################################################################
+
+def Batch_Reference(video_dict, num_frames=50, frames=None):
+
+    images = []
+    references = []
+    for file in video_dict['FileNames']:
+        print('Processing File: {f}'.format(f=file))
+        video_dict['file'] = file
+        video_dict['fpath'] = os.path.join(os.path.normpath(video_dict['dpath']), file)
+
+        # Print video information. Note that max frame is updated later if fewer frames detected
+        cap = cv2.VideoCapture(video_dict['fpath'])
+        cap_max = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        print('total frames: {frames}'.format(frames=cap_max))
+        print('nominal fps: {fps}'.format(fps=cap.get(cv2.CAP_PROP_FPS)))
+        print('dimensions (h x w): {h},{w}'.format(
+            h=int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+            w=int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))))
+
+        reference, image = Reference(video_dict, num_frames=50)
+        # images.append(image)
+        images = images + [image.opts(title=file)]
+        references.append(reference)
+
+    return references, images
 
 
-
-########################################################################################        
+########################################################################################
 
 def PlayVideo(video_dict,display_dict,location):  
     """ 
