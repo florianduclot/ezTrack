@@ -1639,7 +1639,7 @@ def Batch_Process(video_dict,tracking_params,bin_dict,accept_p_frames=False):
 
 ########################################################################################
 
-def Batch_Reference(video_dict, num_frames=50, frames=None):
+def Batch_Reference(video_dict, num_frames=50, frames_dict=None):
 
     images = []
     references = []
@@ -1657,7 +1657,12 @@ def Batch_Reference(video_dict, num_frames=50, frames=None):
             h=int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
             w=int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))))
 
-        reference, image = Reference(video_dict, num_frames=50)
+        # Get frames range for file
+        try:
+            frame_range = frames_dict[file]
+        except KeyError:
+            frame_range = None
+        reference, image = Reference(video_dict, num_frames=num_frames, frames=frame_range)
         # images.append(image)
         images = images + [image.opts(title=file)]
         references.append(reference)
