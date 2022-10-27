@@ -1492,7 +1492,7 @@ def Batch_LoadFiles(video_dict):
         
 ######################################################################################## 
 
-def Batch_Process(video_dict,tracking_params,bin_dict,accept_p_frames=False):   
+def Batch_Process(video_dict,tracking_params,bin_dict,accept_p_frames=False,frames_dict=None):
     """ 
     -------------------------------------------------------------------------------------
     
@@ -1614,8 +1614,16 @@ def Batch_Process(video_dict,tracking_params,bin_dict,accept_p_frames=False):
         #check for video p-frames
         if accept_p_frames is False:
             check_p_frames(cap)
-        
-        video_dict['reference'], image = Reference(video_dict,num_frames=50) 
+
+        # Get frames range for file
+        try:
+            frame_range = frames_dict[file]
+        except TypeError:
+            frame_range = None
+
+        print(f'The reference image will be extracted from the following range: {frame_range}'.format(frame_range=frame_range))
+        # video_dict['reference'], image = Reference(video_dict,num_frames=50)
+        video_dict['reference'], image = Reference(video_dict,num_frames=50,frames=frame_range)
         location = TrackLocation(video_dict,tracking_params)
         location.to_csv(os.path.splitext(video_dict['fpath'])[0] + '_LocationOutput.csv', index=False)
         file_summary = Summarize_Location(location, video_dict, bin_dict=bin_dict)
@@ -1660,7 +1668,7 @@ def Batch_Reference(video_dict, num_frames=50, frames_dict=None):
         # Get frames range for file
         try:
             frame_range = frames_dict[file]
-        except KeyError:
+        except TypeError:
             frame_range = None
         reference, image = Reference(video_dict, num_frames=num_frames, frames=frame_range)
         # images.append(image)
