@@ -1249,10 +1249,33 @@ def ROI_transitions(regions, include_first=False):
     return transitions
 
 
+########################################################################################
+
+def generate_bin_dict(total_duration, tb_min, fps, min_frame):
+    """
+    Create the bin_dict based on the following parameters:
+    total_duration: total duration of video to analyze in mins
+    tb_min: size of timebins in mins
+    fps: number of frames per second
+    min_frame: value of first frame, usually 0
+    """
+    max_frame = total_duration * 60 * fps
+
+    # Get tuples of timebins
+    step = tb_min * 60 * fps
+    ranges = [(n, min(n + step, max_frame)) for n in range(min_frame, max_frame, step)]
+
+    # Get list of timebins names
+    names = [str(name) for name in range(1, len(ranges) + 1)]
+
+    final_dict = {}
+    for n, r in zip(names, ranges):
+        final_dict[n] = r
+
+    return final_dict
 
 
-
-########################################################################################        
+########################################################################################
     
 def Summarize_Location(location, video_dict, bin_dict=None):
     """ 
